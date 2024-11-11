@@ -146,9 +146,3 @@ BEGIN
     LIMIT 5;
 END;
 $$ LANGUAGE plpgsql;
-
-
-
-
-
-
