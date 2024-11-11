@@ -102,7 +102,50 @@ SELECT *
 FROM Vasarlok 
 WHERE nev LIKE 'Kiss%';
 
+-- Számla generálása
+CREATE OR REPLACE FUNCTION generate_szamla(p_rendeles_id INT)
+RETURNS VOID AS $$
+DECLARE
+    osszeg NUMERIC(10, 2);
+BEGIN
+    SELECT SUM(tetel_ar * darabszam) INTO osszeg
+    FROM Rendeles_tetelek
+    WHERE rendeles_id = p_rendeles_id;
 
+    INSERT INTO Szamlak (rendeles_id, osszeg)
+    VALUES (p_rendeles_id, osszeg);
+END;
+$$ LANGUAGE plpgsql;
+
+SELECT generate_szamla(1);
+SELECT generate_szamla(2);
+SELECT generate_szamla(3);
+
+SELECT * FROM Szamlak;
+
+CREATE OR REPLACE FUNCTION legjobban_fogyokonyvek()
+RETURNS TABLE(konyv_id INT, osszes_darabszam INT) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT konyv_id, SUM(darabszam) AS osszes_darabszam
+    FROM Rendeles_tetelek
+    GROUP BY konyv_id
+    ORDER BY osszes_darabszam DESC
+    LIMIT 5;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION legaktivabb_vasarlok()
+RETURNS TABLE(vasarlo_id INT, rendelesek_szama INT) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT vasarlo_id, COUNT(*) AS rendelesek_szama
+    FROM Rendelesek
+    GROUP BY vasarlo_id
+    ORDER BY rendelesek_szama DESC
+    LIMIT 5;
+END;
+$$ LANGUAGE plpgsql;
 
 
 
