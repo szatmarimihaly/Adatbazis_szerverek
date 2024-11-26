@@ -102,7 +102,7 @@ SELECT *
 FROM Vasarlok 
 WHERE nev LIKE 'Kiss%';
 
--- Számla generálása
+
 CREATE OR REPLACE FUNCTION generate_szamla(p_rendeles_id INT)
 RETURNS VOID AS $$
 DECLARE
